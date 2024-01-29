@@ -1,0 +1,5 @@
+{
+    "compilerOptions": {"noEmit": false, "target": "ES2022", "outFile": "./out/script.js", "strict": false},
+    "include": ["./src/**/*.ts"],
+    "sourceMap": true
+}
