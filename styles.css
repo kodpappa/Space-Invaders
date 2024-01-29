@@ -2,12 +2,13 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    background-color: black;
 }
 
 canvas {
-    position: absolute;
-    background: black;
-    padding: 0;
-    top: 0;
-    left: 0;
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
 }
