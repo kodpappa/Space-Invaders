@@ -32,4 +32,8 @@ class Invader {
       return false;
     }
   }
+
+  shiftDown() {
+    this.y += 25;
+  }
 }

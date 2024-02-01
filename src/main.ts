@@ -3,11 +3,11 @@ let ctx: CanvasRenderingContext2D;
 let startX = 100;
 let spacing = 40;
 let startY = 100;
-let row1 = new InvadersRow(1);
-let row2 = new InvadersRow(1);
-let row3 = new InvadersRow(1);
-let row4 = new InvadersRow(1);
-let row5 = new InvadersRow(1);
+let row1 = new InvadersRow();
+let row2 = new InvadersRow();
+let row3 = new InvadersRow();
+let row4 = new InvadersRow();
+let row5 = new InvadersRow();
 
 window.onload = function () {
   canvas = document.getElementById("canvas1") as HTMLCanvasElement;

@@ -21,22 +21,24 @@ class Invader {
         this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         this.ctx.fill();
     }
-    hitsEdge() {
+    isOutOfBounds() {
         if (this.x - this.radius <= 0 || this.x + this.radius >= this.ctx.canvas.width) {
-            console.log(this);
             return true;
         }
         else {
             return false;
         }
     }
+    shiftDown() {
+        this.y += 25;
+    }
 }
 class InvadersRow {
     direction;
     invaders;
-    constructor(direction) {
+    constructor() {
         this.invaders = [];
-        this.direction = direction;
+        this.direction = 1;
     }
     add(invader) {
         this.invaders.push(invader);
@@ -47,8 +49,11 @@ class InvadersRow {
         }
     }
     move() {
-        if (this.invaders[0].hitsEdge() || this.invaders[10].hitsEdge()) {
+        if (this.invaders[0].isOutOfBounds() || this.invaders[10].isOutOfBounds()) {
             this.direction = this.direction * -1;
+            this.invaders.forEach((invader) => {
+                invader.shiftDown();
+            });
         }
         for (let i = 0; i < this.invaders.length; i++) {
             this.invaders[i].move(this.direction);
@@ -60,11 +65,11 @@ let ctx;
 let startX = 100;
 let spacing = 40;
 let startY = 100;
-let row1 = new InvadersRow(1);
-let row2 = new InvadersRow(1);
-let row3 = new InvadersRow(1);
-let row4 = new InvadersRow(1);
-let row5 = new InvadersRow(1);
+let row1 = new InvadersRow();
+let row2 = new InvadersRow();
+let row3 = new InvadersRow();
+let row4 = new InvadersRow();
+let row5 = new InvadersRow();
 window.onload = function () {
     canvas = document.getElementById("canvas1");
     ctx = canvas.getContext("2d");
