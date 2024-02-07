@@ -3,11 +3,8 @@ let ctx: CanvasRenderingContext2D;
 let startX = 100;
 let spacing = 40;
 let startY = 100;
-let row1 = new InvadersRow();
-let row2 = new InvadersRow();
-let row3 = new InvadersRow();
-let row4 = new InvadersRow();
-let row5 = new InvadersRow();
+let rows = new Array<InvadersRow>();
+let defender: Defender;
 
 window.onload = function () {
   canvas = document.getElementById("canvas1") as HTMLCanvasElement;
@@ -16,34 +13,25 @@ window.onload = function () {
   canvas.width = 600;
   canvas.height = 600;
 
-  for (let i = 0; i < 11; i++) {
-    row1.add(new Invader(ctx, startX + spacing * i, startY, "cyan"));
-    row2.add(new Invader(ctx, startX + spacing * i, startY + spacing, "purple"));
-    row3.add(new Invader(ctx, startX + spacing * i, startY + spacing * 2, "purple"));
-    row4.add(new Invader(ctx, startX + spacing * i, startY + spacing * 3, "blue"));
-    row5.add(new Invader(ctx, startX + spacing * i, startY + spacing * 4, "blue"));
+  for (let row = 0; row < 5; row++) {
+    let invadersRow = new InvadersRow();
+    for (let col = 0; col < 11; col++) {
+      invadersRow.add(new Invader(ctx, startX + spacing * col, startY + spacing * row, "yellow"));
+    }
+    rows.push(invadersRow);
   }
 
-  row1.draw();
-  row2.draw();
-  row3.draw();
-  row4.draw();
-  row5.draw();
+  defender = new Defender(ctx, canvas.width / 2, canvas.height, "white");
   window.requestAnimationFrame(animate);
 };
 
 function animate() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  row1.move();
-  row2.move();
-  row3.move();
-  row4.move();
-  row5.move();
-  row1.draw();
-  row2.draw();
-  row3.draw();
-  row4.draw();
-  row5.draw();
+  for (let row = 0; row < rows.length; row++) {
+    rows[row].move();
+    rows[row].draw();
+  }
 
+  defender.draw();
   requestAnimationFrame(this.animate.bind(this));
 }
