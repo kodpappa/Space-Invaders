@@ -21,6 +21,14 @@ class Defender {
     this.ctx.fill();
   }
 
+  move(direction: number) {
+    let currentX = this.x;
+    this.x += direction;
+    if (this.isOutOfBounds()) {
+      this.x = currentX;
+    }
+  }
+
   isOutOfBounds() {
     if (this.x - this.radius <= 0 || this.x + this.radius >= this.ctx.canvas.width) {
       return true;

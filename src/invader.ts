@@ -13,8 +13,12 @@ class Invader {
     this.radius = 12;
   }
 
-  move = function (direction: number) {
-    this.x += direction;
+  move = function (direction: Direction) {
+    if (direction === Direction.Left) {
+      this.x -= this.radius / 2;
+    } else {
+      this.x += this.radius / 2;
+    }
   };
 
   draw() {
@@ -27,6 +31,14 @@ class Invader {
 
   isOutOfBounds() {
     if (this.x - this.radius <= 0 || this.x + this.radius >= this.ctx.canvas.width) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  wins() {
+    if (this.y + this.radius >= this.ctx.canvas.height) {
       return true;
     } else {
       return false;

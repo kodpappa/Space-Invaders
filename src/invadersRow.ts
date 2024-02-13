@@ -29,4 +29,12 @@ class InvadersRow {
       this.invaders[i].move(this.direction);
     }
   }
+
+  wins() {
+    if (this.invaders[this.invaders.length - 1].wins()) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
