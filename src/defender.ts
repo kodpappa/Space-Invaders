@@ -1,36 +1,40 @@
 class Defender {
-  private x: number;
-  private y: number;
   private ctx: CanvasRenderingContext2D;
-  private color: string;
-  private radius: number;
+  private image: HTMLImageElement;
+  private sprite: Sprite;
+  private position: Position;
 
-  constructor(ctx: CanvasRenderingContext2D, x: number, y: number, color: string) {
+  constructor(ctx: CanvasRenderingContext2D, image: HTMLImageElement, sprite: Sprite, position: Position) {
     this.ctx = ctx;
-    this.x = x;
-    this.y = y;
-    this.color = color;
-    this.radius = 12;
+    this.image = image;
+    this.sprite = sprite;
+    this.position = position;
   }
 
   draw() {
-    this.ctx.strokeStyle = this.color;
-    this.ctx.fillStyle = this.color;
-    this.ctx.beginPath();
-    this.ctx.arc(this.x - this.radius, this.y - this.radius, this.radius, 0, Math.PI * 2);
-    this.ctx.fill();
+    this.ctx.drawImage(
+      this.image,
+      this.sprite.offset.x,
+      this.sprite.offset.y,
+      this.sprite.width,
+      this.sprite.height,
+      this.position.x,
+      this.position.y,
+      this.sprite.width,
+      this.sprite.height
+    );
   }
 
   move(direction: number) {
-    let currentX = this.x;
-    this.x += direction;
+    let currentX = this.position.x;
+    this.position.x += direction;
     if (this.isOutOfBounds()) {
-      this.x = currentX;
+      this.position.x = currentX;
     }
   }
 
   isOutOfBounds() {
-    if (this.x - this.radius <= 0 || this.x + this.radius >= this.ctx.canvas.width) {
+    if (this.position.x - this.sprite.width <= 0 || this.position.x + this.sprite.width >= this.ctx.canvas.width) {
       return true;
     } else {
       return false;

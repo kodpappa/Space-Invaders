@@ -6,25 +6,25 @@ let startY = 100;
 let rows = new Array<InvadersRow>();
 let defender: Defender;
 let frameId: number;
-let FPS = 5;
+let FPS = 10;
 let direction: Direction;
 
 let BORDER_WIDTH = 4;
 let SPACING_WIDTH = 8;
 let SPRITE_WIDTH = 46;
 let SPRITE_HEIGHT = 22;
+let BOTTOM_PADDING = 122;
+let SIDE_PADDING = 10;
 
 window.onload = function () {
   canvas = document.getElementById("canvas1") as HTMLCanvasElement;
   ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
-
   canvas.width = 600;
   canvas.height = 800;
 
   var image = new Image();
   image.src = "./assets/spritesheet.png";
 
-  // extract all of our frames
   var alien1_1 = spritePositionToImagePosition(0, 0);
   var alien1_2 = spritePositionToImagePosition(1, 0);
   var alien2_1 = spritePositionToImagePosition(0, 1);
@@ -36,13 +36,15 @@ window.onload = function () {
   var cycle2 = [alien2_1, alien2_2];
   var cycle3 = [alien3_1, alien3_2];
 
+  var defenderSprite = new Sprite(new Position(4, 148), SPRITE_WIDTH, SPRITE_HEIGHT);
+
   rows.push(getRow(image, cycle1, 0));
   rows.push(getRow(image, cycle2, 1));
   rows.push(getRow(image, cycle2, 2));
   rows.push(getRow(image, cycle3, 3));
   rows.push(getRow(image, cycle3, 4));
 
-  defender = new Defender(ctx, canvas.width / 2, canvas.height, "white");
+  defender = new Defender(ctx, image, defenderSprite, new Position(canvas.width / 2, canvas.height - BOTTOM_PADDING));
   frameId = requestAnimationFrame(animate);
 };
 
@@ -62,9 +64,9 @@ function animate() {
     defender.draw();
 
     for (let row = 0; row < rows.length; row++) {
-      rows[row].move();
+      rows[row].move(SIDE_PADDING);
 
-      if (rows[row].wins()) {
+      if (rows[row].wins(BOTTOM_PADDING)) {
         console.log("Invaders wins");
         console.log(frameId);
         cancelAnimationFrame(frameId);
@@ -79,16 +81,24 @@ function animate() {
 }
 
 function spritePositionToImagePosition(row: number, col: number) {
-  return {
-    x: BORDER_WIDTH + col * (SPACING_WIDTH + SPRITE_WIDTH),
-    y: BORDER_WIDTH + row * (SPACING_WIDTH + SPRITE_HEIGHT),
-  };
+  return new Position(
+    BORDER_WIDTH + col * (SPACING_WIDTH + SPRITE_WIDTH),
+    BORDER_WIDTH + row * (SPACING_WIDTH + SPRITE_HEIGHT)
+  );
 }
 
 function getRow(image: HTMLImageElement, rowcycle, rowNumber: number) {
   var row = new InvadersRow();
   for (let col = 0; col < 11; col++) {
-    row.add(new Invader(ctx, image, rowcycle, startX + spacing * col, startY + spacing * rowNumber));
+    row.add(
+      new Alien(
+        ctx,
+        image,
+        new Sprite(new Position(rowcycle[0].x, rowcycle[0].y), SPRITE_WIDTH, SPRITE_HEIGHT),
+        new Sprite(new Position(rowcycle[1].x, rowcycle[1].y), SPRITE_WIDTH, SPRITE_HEIGHT),
+        new Position(startX + spacing * col, startY + spacing * rowNumber)
+      )
+    );
   }
 
   return row;

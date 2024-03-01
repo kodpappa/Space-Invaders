@@ -1,37 +1,37 @@
 class InvadersRow {
   private direction: number;
-  private invaders: Invader[];
+  private aliens: Alien[];
 
   constructor() {
-    this.invaders = [];
+    this.aliens = [];
     this.direction = 1;
   }
 
-  add(invader: Invader) {
-    this.invaders.push(invader);
+  add(alien: Alien) {
+    this.aliens.push(alien);
   }
 
   draw() {
-    for (let i = 0; i < this.invaders.length; i++) {
-      this.invaders[i].draw();
+    for (let i = 0; i < this.aliens.length; i++) {
+      this.aliens[i].draw();
     }
   }
 
-  move() {
-    if (this.invaders[0].isOutOfBounds() || this.invaders[10].isOutOfBounds()) {
+  move(sidePadding: number) {
+    if (this.aliens[0].isOutOfBounds(sidePadding) || this.aliens[10].isOutOfBounds(sidePadding)) {
       this.direction = this.direction * -1;
-      this.invaders.forEach((invader) => {
-        invader.shiftDown();
+      this.aliens.forEach((alien) => {
+        alien.shiftDown();
       });
     }
 
-    for (let i = 0; i < this.invaders.length; i++) {
-      this.invaders[i].move(this.direction);
+    for (let i = 0; i < this.aliens.length; i++) {
+      this.aliens[i].move(this.direction);
     }
   }
 
-  wins() {
-    if (this.invaders[this.invaders.length - 1].wins()) {
+  wins(bottomPadding: number) {
+    if (this.aliens[this.aliens.length - 1].wins(bottomPadding)) {
       return true;
     } else {
       return false;
