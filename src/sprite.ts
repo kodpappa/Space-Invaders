@@ -8,4 +8,8 @@ class Sprite {
     this.width = width;
     this.height = height;
   }
+
+  draw(ctx, image, x, y) {
+    ctx.drawImage(image, this.offset.x, this.offset.y, this.width, this.height, x, y, this.width, this.height);
+  }
 }

@@ -5,11 +5,15 @@ let spacing = 40;
 let startY = 100;
 let rows = new Array<InvadersRow>();
 let defender: Defender;
+let missile: Missile;
+let missileSprite: Sprite;
 let frameId: number;
-let FPS = 10;
+let image: HTMLImageElement;
+let FPS = 4;
 let direction: Direction;
+let chars: Chars;
 
-let BORDER_WIDTH = 4;
+let BORDER_WIDTH = 3;
 let SPACING_WIDTH = 8;
 let SPRITE_WIDTH = 46;
 let SPRITE_HEIGHT = 22;
@@ -20,9 +24,9 @@ window.onload = function () {
   canvas = document.getElementById("canvas1") as HTMLCanvasElement;
   ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
   canvas.width = 600;
-  canvas.height = 800;
+  canvas.height = 700;
 
-  var image = new Image();
+  image = new Image();
   image.src = "./assets/spritesheet.png";
 
   var alien1_1 = spritePositionToImagePosition(0, 0);
@@ -44,16 +48,20 @@ window.onload = function () {
   rows.push(getRow(image, cycle3, 3));
   rows.push(getRow(image, cycle3, 4));
 
+  chars = new Chars();
   defender = new Defender(ctx, image, defenderSprite, new Position(canvas.width / 2, canvas.height - BOTTOM_PADDING));
   frameId = requestAnimationFrame(animate);
 };
 
 document.addEventListener("keydown", (event) => {
-  if (event.key == "d") {
+  if (event.key == "d" || event.key == "ArrowRight") {
     defender.move(12);
   }
-  if (event.key == "a") {
+  if (event.key == "a" || event.key == "ArrowLeft") {
     defender.move(-12);
+  }
+  if (event.key == " ") {
+    addMissile();
   }
 });
 
@@ -61,7 +69,19 @@ function animate() {
   setTimeout(function () {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    chars.drawScore(ctx, image, 0, 0);
     defender.draw();
+
+    if (missile != null) {
+      missile.move();
+
+      if (missile.collision()) {
+        missile.explode();
+        missile = null;
+      } else {
+        missile.draw();
+      }
+    }
 
     for (let row = 0; row < rows.length; row++) {
       rows[row].move(SIDE_PADDING);
@@ -102,4 +122,11 @@ function getRow(image: HTMLImageElement, rowcycle, rowNumber: number) {
   }
 
   return row;
+}
+
+function addMissile() {
+  if (missile == null) {
+    var defenderPosition = defender.getCurrentPosition();
+    missile = new Missile(ctx, image, defenderPosition.x + SPRITE_WIDTH / 2, defenderPosition.y - SPRITE_HEIGHT);
+  }
 }

@@ -51,6 +51,49 @@ class Alien {
         this.position.y += 25;
     }
 }
+const CHAR_HEIGHT = 24;
+const CHAR_WIDTH = 24;
+const CHAR_SPACING = 6;
+const CHAR_OFFSET = 207;
+class Chars {
+    char_h;
+    char_i;
+    char_s;
+    char_c;
+    char_o;
+    char_r;
+    char_e;
+    char_dash;
+    char_gt;
+    char_lt;
+    char_0;
+    char_1;
+    char_2;
+    char_3;
+    char_4;
+    char_5;
+    char_6;
+    char_7;
+    char_8;
+    char_9;
+    constructor() {
+        this.char_s = new Sprite(getCharSpritePostion(2, 2), CHAR_WIDTH, CHAR_HEIGHT);
+        this.char_c = new Sprite(getCharSpritePostion(0, 2), CHAR_WIDTH, CHAR_HEIGHT);
+        this.char_o = new Sprite(getCharSpritePostion(1, 6), CHAR_WIDTH, CHAR_HEIGHT);
+        this.char_r = new Sprite(getCharSpritePostion(2, 1), CHAR_WIDTH, CHAR_HEIGHT);
+        this.char_e = new Sprite(getCharSpritePostion(0, 4), CHAR_WIDTH, CHAR_HEIGHT);
+    }
+    drawScore(ctx, image, posX, posY) {
+        this.char_s.draw(ctx, image, posX, posY);
+        this.char_c.draw(ctx, image, CHAR_WIDTH, posY);
+        this.char_o.draw(ctx, image, CHAR_WIDTH * 2, posY);
+        this.char_r.draw(ctx, image, CHAR_WIDTH * 3, posY);
+        this.char_e.draw(ctx, image, CHAR_WIDTH * 4, posY);
+    }
+}
+function getCharSpritePostion(row, col) {
+    return new Position(BORDER_WIDTH + col * (CHAR_SPACING + CHAR_WIDTH), BORDER_WIDTH + row * (CHAR_SPACING + CHAR_HEIGHT) + 204);
+}
 class Defender {
     ctx;
     image;
@@ -64,6 +107,9 @@ class Defender {
     }
     draw() {
         this.ctx.drawImage(this.image, this.sprite.offset.x, this.sprite.offset.y, this.sprite.width, this.sprite.height, this.position.x, this.position.y, this.sprite.width, this.sprite.height);
+    }
+    getCurrentPosition() {
+        return this.position;
     }
     move(direction) {
         let currentX = this.position.x;
@@ -184,10 +230,14 @@ let spacing = 40;
 let startY = 100;
 let rows = new Array();
 let defender;
+let missile;
+let missileSprite;
 let frameId;
-let FPS = 10;
+let image;
+let FPS = 4;
 let direction;
-let BORDER_WIDTH = 4;
+let chars;
+let BORDER_WIDTH = 3;
 let SPACING_WIDTH = 8;
 let SPRITE_WIDTH = 46;
 let SPRITE_HEIGHT = 22;
@@ -197,8 +247,8 @@ window.onload = function () {
     canvas = document.getElementById("canvas1");
     ctx = canvas.getContext("2d");
     canvas.width = 600;
-    canvas.height = 800;
-    var image = new Image();
+    canvas.height = 700;
+    image = new Image();
     image.src = "./assets/spritesheet.png";
     var alien1_1 = spritePositionToImagePosition(0, 0);
     var alien1_2 = spritePositionToImagePosition(1, 0);
@@ -215,21 +265,36 @@ window.onload = function () {
     rows.push(getRow(image, cycle2, 2));
     rows.push(getRow(image, cycle3, 3));
     rows.push(getRow(image, cycle3, 4));
+    chars = new Chars();
     defender = new Defender(ctx, image, defenderSprite, new Position(canvas.width / 2, canvas.height - BOTTOM_PADDING));
     frameId = requestAnimationFrame(animate);
 };
 document.addEventListener("keydown", (event) => {
-    if (event.key == "d") {
+    if (event.key == "d" || event.key == "ArrowRight") {
         defender.move(12);
     }
-    if (event.key == "a") {
+    if (event.key == "a" || event.key == "ArrowLeft") {
         defender.move(-12);
+    }
+    if (event.key == " ") {
+        addMissile();
     }
 });
 function animate() {
     setTimeout(function () {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        chars.drawScore(ctx, image, 0, 0);
         defender.draw();
+        if (missile != null) {
+            missile.move();
+            if (missile.collision()) {
+                missile.explode();
+                missile = null;
+            }
+            else {
+                missile.draw();
+            }
+        }
         for (let row = 0; row < rows.length; row++) {
             rows[row].move(SIDE_PADDING);
             if (rows[row].wins(BOTTOM_PADDING)) {
@@ -253,6 +318,40 @@ function getRow(image, rowcycle, rowNumber) {
     }
     return row;
 }
+function addMissile() {
+    if (missile == null) {
+        var defenderPosition = defender.getCurrentPosition();
+        missile = new Missile(ctx, image, defenderPosition.x + SPRITE_WIDTH / 2, defenderPosition.y - SPRITE_HEIGHT);
+    }
+}
+class Missile {
+    ctx;
+    image;
+    sprite;
+    position;
+    constructor(ctx, image, x, y) {
+        this.ctx = ctx;
+        this.image = image;
+        this.sprite = new Sprite(new Position(165, 147), 3, 24);
+        this.position = new Position(x, y);
+    }
+    draw() {
+        this.ctx.drawImage(this.image, this.sprite.offset.x, this.sprite.offset.y, this.sprite.width, this.sprite.height, this.position.x, this.position.y, this.sprite.width, this.sprite.height);
+    }
+    move() {
+        this.position.y = this.position.y - this.sprite.height / 2;
+    }
+    collision() {
+        if (this.position.y < 100) {
+            return true;
+        }
+        return false;
+    }
+    explode() {
+        this.sprite = new Sprite(new Position(169, 147), 30, 24);
+        this.draw();
+    }
+}
 class Position {
     x;
     y;
@@ -269,5 +368,8 @@ class Sprite {
         this.offset = offset;
         this.width = width;
         this.height = height;
+    }
+    draw(ctx, image, x, y) {
+        ctx.drawImage(image, this.offset.x, this.offset.y, this.width, this.height, x, y, this.width, this.height);
     }
 }

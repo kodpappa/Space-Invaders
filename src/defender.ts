@@ -25,6 +25,10 @@ class Defender {
     );
   }
 
+  getCurrentPosition() {
+    return this.position;
+  }
+
   move(direction: number) {
     let currentX = this.position.x;
     this.position.x += direction;
